@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f2a5c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>BMC Learn — Bangun Ide Bisnismu</title>
+<style>
+:root{
+ --navy:#0f2a5c;--blue:#2563eb;--blue-2:#1d4ed8;--sky:#eaf2ff;--ink:#14213d;--muted:#5b6b85;
+ --paper:#f3f6fc;--white:#fff;--line:#e0e8f4;--green:#0d9b72;--orange:#f59e0b;
+ --pink:#ef6d85;--purple:#7c5ce6;--radius:20px;
+ --shadow-sm:0 1px 2px rgba(15,42,92,.04),0 6px 18px rgba(15,42,92,.05);
+ --shadow:0 2px 4px rgba(15,42,92,.04),0 16px 40px rgba(15,42,92,.09);
+ --shadow-lg:0 4px 8px rgba(15,42,92,.05),0 26px 60px rgba(15,42,92,.14);
+ --font-body:'Plus Jakarta Sans','Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+ --font-display:'Bricolage Grotesque','Plus Jakarta Sans',ui-sans-serif,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+ margin:0;color:var(--ink);font:15px/1.6 var(--font-body);letter-spacing:-.003em;
+ background:
+  radial-gradient(900px 420px at 92% -8%,rgba(37,99,235,.10),transparent 60%),
+  radial-gradient(700px 380px at -5% 12%,rgba(124,92,230,.07),transparent 60%),
+  var(--paper);
+ background-attachment:fixed;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid rgba(37,99,235,.45);outline-offset:2px;border-radius:10px}
+h1,h2,h3,h4,.brand strong{font-family:var(--font-display);letter-spacing:-.025em}
+
+/* ===== Layout ===== */
+.app{display:grid;grid-template-columns:256px minmax(0,1fr);min-height:100vh}
+.sidebar{
+ background:rgba(255,255,255,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+ border-right:1px solid var(--line);padding:26px 16px;position:sticky;top:0;height:100vh;
+ display:flex;flex-direction:column;gap:26px;overflow-y:auto
+}
+.brand{display:flex;align-items:center;gap:12px;padding:0 8px}
+.brand-mark{
+ height:44px;width:44px;border-radius:14px;color:#fff;display:grid;place-items:center;
+ font:800 21px var(--font-display);
+ background:linear-gradient(140deg,#0f2a5c 0%,#2563eb 70%,#60a5fa 100%);
+ box-shadow:0 8px 20px rgba(37,99,235,.32),inset 0 1px 0 rgba(255,255,255,.25)
+}
+.brand strong{display:block;font-size:18px;font-weight:800;line-height:1.1}
+.brand small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+.nav{display:grid;gap:4px}
+.nav button{
+ position:relative;display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:13px;
+ background:transparent;color:#5a6a84;text-align:left;font-weight:650;font-size:14px;letter-spacing:-.01em;transition:background .2s,color .2s,transform .2s
+}
+.nav button:hover{background:#eef4ff;color:#1d4ed8}
+.nav button.active{background:linear-gradient(100deg,#e6efff,#f1f6ff);color:#1a4bb8;font-weight:750}
+.nav button.active:before{content:"";position:absolute;left:-16px;top:10px;bottom:10px;width:4px;border-radius:0 4px 4px 0;background:linear-gradient(#2563eb,#60a5fa)}
+.nav .ico{font-size:17px;width:24px;text-align:center}
+.side-tip{
+ margin-top:auto;padding:18px;border-radius:20px;color:#fff;position:relative;overflow:hidden;
+ background:linear-gradient(150deg,#0f2a5c,#1d4ed8 80%);box-shadow:0 14px 30px rgba(29,78,216,.28)
+}
+.side-tip:after{content:"";position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.1)}
+.side-tip .bulb{font-size:26px}
+.side-tip b{display:block;margin:8px 0 4px;font-family:var(--font-display);font-size:15px;position:relative}
+.side-tip p{font-size:12.5px;color:#cfe0ff;margin:0 0 14px;position:relative}
+.side-tip .btn.primary{background:#fff;color:#1a4bb8;box-shadow:none;position:relative}
+
+.main{min-width:0;padding:26px clamp(16px,3.2vw,44px) 40px;max-width:1500px;width:100%}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;gap:12px}
+.eyebrow{font-size:11.5px;text-transform:uppercase;letter-spacing:.14em;color:#3b68c2;font-weight:800}
+.topbar h1{font-size:clamp(22px,2.4vw,28px);font-weight:800;margin:3px 0 0}
+.user-chip{
+ background:#fff;border:1px solid var(--line);border-radius:99px;padding:8px 15px 8px 10px;display:flex;align-items:center;gap:9px;
+ color:#3f5070;font-size:13px;font-weight:650;box-shadow:var(--shadow-sm)
+}
+.user-chip span:first-child{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#fff4d6;font-size:14px}
+
+.view{display:none}
+.view.active{display:block;animation:fade .35s cubic-bezier(.2,.7,.2,1)}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ===== Hero ===== */
+.hero{
+ display:grid;grid-template-columns:1.25fr .75fr;gap:24px;overflow:hidden;position:relative;color:#fff;
+ background:
+  radial-gradient(520px 260px at 85% 10%,rgba(96,165,250,.45),transparent 65%),
+  linear-gradient(125deg,#0d2557 0%,#1a47a8 55%,#2f6df0 100%);
+ border-radius:28px;padding:clamp(24px,4.2vw,48px);box-shadow:var(--shadow-lg);min-height:300px;margin-bottom:20px
+}
+.hero:before{
+ content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;
+ background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);
+ background-size:38px 38px;-webkit-mask-image:radial-gradient(ellipse at 80% 40%,#000,transparent 72%);mask-image:radial-gradient(ellipse at 80% 40%,#000,transparent 72%)
+}
+.hero>*{position:relative}
+.hero .pill{background:rgba(255,255,255,.15);color:#e3eeff;border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(6px)}
+.hero h2{font-size:clamp(30px,3.6vw,50px);line-height:1.07;letter-spacing:-.045em;margin:16px 0 14px;font-weight:800}
+.hero h2 span{background:linear-gradient(90deg,#9fd0ff,#ffe08a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{max-width:520px;color:#d3e2fb;margin:0 0 24px;font-size:15.5px;line-height:1.7}
+.hero .btn.white{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.hero .btn.white:hover{background:rgba(255,255,255,.2)}
+.hero .btn.primary{background:#fff;color:#173f94;box-shadow:0 10px 24px rgba(0,0,0,.18)}
+.hero-art{align-self:center;justify-self:center;position:relative;width:240px;height:210px;display:grid;place-items:center}
+.art-circle{position:absolute;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2)}
+.art-circle.one{width:200px;height:200px}.art-circle.two{width:140px;height:140px;background:rgba(255,255,255,.18)}
+.art-card{
+ position:absolute;background:#fff;color:#173f94;border-radius:16px;box-shadow:0 16px 34px rgba(0,0,0,.22);
+ padding:12px 14px;font-size:12px;font-weight:800;line-height:1.35;animation:float 5s ease-in-out infinite
+}
+.art-card.top{top:2px;right:-6px;transform:rotate(7deg)}
+.art-card.bottom{bottom:6px;left:-6px;transform:rotate(-6deg);animation-delay:-2.5s}
+@keyframes float{0%,100%{translate:0 0}50%{translate:0 -7px}}
+.art-person{z-index:1;font-size:78px;filter:drop-shadow(0 10px 8px rgba(0,0,0,.25))}
+
+/* ===== Buttons & pills ===== */
+.btn{
+ display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:13px;
+ font-weight:750;font-size:13.5px;letter-spacing:-.005em;transition:transform .18s,box-shadow .18s,background .18s;white-space:nowrap
+}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{cursor:not-allowed}
+.btn.primary{background:linear-gradient(120deg,#1a45a0,#2f6df0);color:#fff;box-shadow:0 8px 20px rgba(37,99,235,.3)}
+.btn.primary:hover{box-shadow:0 12px 26px rgba(37,99,235,.38)}
+.btn.soft{background:#e8f0ff;color:#1f4fb3}
+.btn.white{background:#fff;color:#1f4fb3;border:1px solid #d5e3fb;box-shadow:var(--shadow-sm)}
+.btn.green{background:linear-gradient(120deg,#0a8a65,#12b886);color:#fff;box-shadow:0 8px 20px rgba(13,155,114,.28)}
+.btn.ghost{background:transparent;color:#55657f;border:1px solid var(--line)}
+.btn.ghost:hover{background:#fff}
+.pill{display:inline-flex;align-items:center;background:#e6f0ff;color:#2457b8;padding:6px 12px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:.06em}
+.mini-link{font-size:12px;color:#2457b8;font-weight:800;background:transparent;padding:6px 8px;border-radius:8px}
+.mini-link:hover{background:#e8f0ff}
+
+/* ===== Sections ===== */
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:34px 0 16px}
+.section-head h3{font-size:21px;font-weight:800;margin:0}
+.section-head p{font-size:13.5px;color:var(--muted);margin:4px 0 0}
+.panel{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow-sm)}
+.page-intro{display:flex;justify-content:space-between;gap:20px;align-items:start;margin:4px 0 22px}
+.page-intro h2{font-size:clamp(24px,2.6vw,32px);font-weight:800;margin:0 0 6px}
+.page-intro p{color:var(--muted);margin:0;max-width:680px;line-height:1.7}
+
+/* ===== Feature cards ===== */
+.feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.feature{
+ padding:22px;border-radius:22px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-sm);
+ position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s
+}
+.feature:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:#cfdef6}
+.feature:after{content:"";position:absolute;width:120px;height:120px;border-radius:50%;right:-38px;top:-40px;background:var(--wash);opacity:.9}
+.feature .feature-icon{position:relative;z-index:1;height:48px;width:48px;border-radius:15px;background:var(--wash);display:grid;place-items:center;font-size:23px;margin-bottom:16px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.03)}
+.feature h4{position:relative;z-index:1;margin:0 0 6px;font-size:17px;font-weight:750}
+.feature p{position:relative;z-index:1;margin:0 0 14px;color:var(--muted);font-size:13.5px;min-height:42px}
+.feature button{position:relative;z-index:1;font-size:13px;color:var(--accent);background:transparent;font-weight:800;padding:0}
+.feature button:hover{text-decoration:underline;text-underline-offset:4px}
+
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+.stat{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 18px;box-shadow:var(--shadow-sm)}
+.stat .stat-icon{height:46px;width:46px;border-radius:14px;background:linear-gradient(140deg,#eaf2ff,#dce9ff);display:grid;place-items:center;font-size:22px}
+.stat strong{font:800 22px var(--font-display);display:block;letter-spacing:-.03em}
+.stat small{font-size:12px;color:var(--muted)}
+
+/* ===== Element cards ===== */
+.element-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.element-card{
+ border:1px solid var(--line);border-radius:20px;background:#fff;overflow:hidden;cursor:pointer;
+ transition:transform .25s,box-shadow .25s,border-color .25s;box-shadow:var(--shadow-sm);position:relative
+}
+.element-card:before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--accent)}
+.element-card:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:var(--accent)}
+.element-top{padding:20px 18px 14px;background:linear-gradient(180deg,var(--wash),#fff);display:flex;align-items:center;justify-content:space-between}
+.element-top .num{font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.1em}
+.element-top .e-icon{font-size:28px;height:50px;width:50px;display:grid;place-items:center;background:#fff;border-radius:15px;box-shadow:0 6px 14px rgba(15,42,92,.08)}
+.element-card h4{margin:0;padding:6px 18px 4px;font-size:16.5px;font-weight:750}
+.element-card p{font-size:13px;color:var(--muted);padding:0 18px;margin:0 0 14px;min-height:42px}
+.element-card .learn{font-size:12px;font-weight:800;color:var(--accent);padding:0 18px 18px;display:block}
+
+/* ===== Filters & fields ===== */
+.filter-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.filter-row input,.filter-row select,.field input,.field select,.field textarea{
+ width:100%;padding:12px 14px;border:1.5px solid #d9e3f1;border-radius:13px;background:#fff;outline:none;color:var(--ink);
+ transition:border-color .2s,box-shadow .2s;font-size:14px
+}
+.filter-row input::placeholder,.field input::placeholder,.field textarea::placeholder{color:#97a4b8}
+.filter-row input:focus,.field input:focus,.field textarea:focus,.field select:focus{border-color:#5b8def;box-shadow:0 0 0 4px rgba(59,130,246,.15)}
+.filter-row input{max-width:340px}
+
+/* ===== Templates ===== */
+.template-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.template-card{background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:var(--shadow-sm);transition:transform .25s,box-shadow .25s}
+.template-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.template-preview{height:140px;padding:14px;display:grid;grid-template-columns:1.2fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;background:var(--template-bg)}
+.preview-cell{border-radius:9px;background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.9);padding:6px 7px;font-size:9px;font-weight:800;color:#2f4768;overflow:hidden;box-shadow:0 2px 6px rgba(15,42,92,.05)}
+.preview-cell:first-child{grid-row:span 2}
+.preview-cell:nth-child(4){grid-column:span 2}
+.template-body{padding:18px}
+.template-body h4{margin:0 0 5px;font-size:17px;font-weight:750}
+.template-body p{font-size:13px;color:var(--muted);margin:0 0 12px;min-height:42px}
+.template-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.template-tags span{font-size:11px;font-weight:650;padding:4px 9px;background:#eef3fa;color:#5a6c86;border-radius:99px}
+
+/* ===== Builder ===== */
+.builder-layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:18px;align-items:start}
+.stepper{display:flex;gap:10px;margin-bottom:22px}
+.step{flex:1;display:flex;align-items:center;gap:8px;font-size:12px;color:#8190a7;font-weight:750;padding-bottom:11px;border-bottom:3px solid #e6ecf5;transition:.25s}
+.step b{display:grid;place-items:center;height:26px;width:26px;border-radius:50%;background:#eef2f8;font-size:12px;transition:.25s}
+.step.active{color:#1f55c0;border-color:#2f6df0}
+.step.active b{background:#2563eb;color:#fff;box-shadow:0 5px 12px rgba(37,99,235,.35)}
+.step.done{color:#07875f;border-color:#16a879}
+.step.done b{background:#d6f5ea;color:#07875f}
+.field{margin:15px 0}
+.field label{display:block;font-size:13px;font-weight:750;margin-bottom:7px;color:#22345a}
+.field small{display:block;color:var(--muted);font-size:12px;margin-top:5px}
+.field textarea{resize:vertical;min-height:82px;line-height:1.55}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.wizard-question{border:1px solid #d9e7fb;background:linear-gradient(180deg,#f7faff,#f1f6ff);padding:17px;border-radius:18px;margin:16px 0}
+.wizard-question h4{margin:0 0 5px;font-size:15px;font-weight:750}
+.wizard-question p{font-size:13px;color:var(--muted);margin:0 0 12px}
+.option-row{display:flex;gap:8px;flex-wrap:wrap}
+.option{border:1.5px solid #d7e3f4;background:#fff;border-radius:12px;padding:9px 13px;font-size:13px;color:#46597a;font-weight:600;transition:.18s}
+.option:hover{border-color:#8fb1f3;transform:translateY(-1px)}
+.option.selected{background:#e3eeff;border-color:#4d86f0;color:#1c52b8;font-weight:800;box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.wizard-nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px;flex-wrap:wrap}
+.builder-side{position:sticky;top:20px}
+.builder-side h4{margin:0 0 12px;font-size:16px;font-weight:750}
+.side-template{border:1px solid var(--line);border-radius:16px;padding:12px;margin:10px 0;display:flex;gap:11px;align-items:center;background:#fff;transition:.2s}
+.side-template:hover{border-color:#b9cffa;box-shadow:var(--shadow-sm);transform:translateX(2px)}
+.side-template .emoji{font-size:24px;height:42px;width:42px;display:grid;place-items:center;background:#f0f5ff;border-radius:12px;flex-shrink:0}
+.side-template b{font-size:13px;display:block}
+.side-template small{font-size:11px;color:var(--muted)}
+.side-template .mini-link{margin-left:auto}
+
+.canvas-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0}
+.canvas-toolbar b{font:800 18px var(--font-display);letter-spacing:-.02em}
+.canvas-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:180px 180px 130px;gap:9px}
+.canvas-box{
+ background:#fff;border:1px solid #dbe5f3;border-top:4px solid var(--accent);border-radius:14px;padding:11px 12px;min-width:0;overflow:auto;
+ box-shadow:0 2px 8px rgba(15,42,92,.04);transition:box-shadow .2s,border-color .2s
+}
+.canvas-box:focus-within{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent),0 8px 20px rgba(15,42,92,.08)}
+.canvas-box h4{font-size:11.5px;line-height:1.3;margin:0 0 7px;color:var(--accent);font-weight:800;letter-spacing:-.005em}
+.canvas-box textarea{border:0;resize:vertical;width:100%;min-height:100px;outline:none;font-size:12px;color:#40526f;background:transparent;line-height:1.6}
+.canvas-box .hint{font-size:10px;color:#a0acbd}
+.canvas-box.partners{grid-column:1;grid-row:1/3}
+.canvas-box.activities{grid-column:2;grid-row:1}
+.canvas-box.resources{grid-column:2;grid-row:2}
+.canvas-box.value{grid-column:3;grid-row:1/3}
+.canvas-box.relations{grid-column:4;grid-row:1}
+.canvas-box.channels{grid-column:4;grid-row:2}
+.canvas-box.segments{grid-column:5;grid-row:1/3}
+.canvas-box.cost{grid-column:1/3;grid-row:3}
+.canvas-box.revenue{grid-column:3/6;grid-row:3}
+
+.notice{padding:13px 16px;background:#eef6ff;border:1px solid #d2e5fc;border-radius:14px;color:#3f5f8d;font-size:13px;margin:14px 0;line-height:1.65}
+
+/* ===== Quiz ===== */
+.quiz-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:clamp(22px,4vw,38px);max-width:840px;margin:0 auto;box-shadow:var(--shadow)}
+.quiz-progress{height:8px;background:#e8eef7;border-radius:99px;overflow:hidden;margin:14px 0 24px}
+.quiz-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#2f6df0,#14b88a);border-radius:99px;transition:width .35s cubic-bezier(.2,.7,.2,1)}
+.quiz-question{font-size:clamp(19px,2.2vw,23px);line-height:1.38;letter-spacing:-.025em;margin:14px 0 20px;font-weight:750}
+.answer-list{display:grid;gap:10px}
+.answer{
+ display:flex;align-items:center;gap:13px;text-align:left;padding:14px 16px;background:#fff;border:1.5px solid #dae4f1;border-radius:15px;
+ color:#3b4e6c;font-weight:600;transition:border-color .18s,background .18s,transform .18s
+}
+.answer .letter{display:grid;place-items:center;height:32px;width:32px;border-radius:10px;background:#eef3fa;font-weight:800;font-size:13px;flex-shrink:0;transition:.18s}
+.answer:hover:not(:disabled){border-color:#7ea8f5;background:#f6faff;transform:translateX(3px)}
+.answer:hover:not(:disabled) .letter{background:#dce9ff;color:#1d4ed8}
+.answer.correct{border-color:#3fc19a;background:#e7faf2;color:#066a4a}
+.answer.correct .letter{background:#bdf0dc;color:#066a4a}
+.answer.wrong{border-color:#f08fa0;background:#fff0f2;color:#b0334a}
+.answer.wrong .letter{background:#ffd3db;color:#b0334a}
+.answer.sel{border-color:#2563eb;background:#eaf2ff;color:#1a4bb8}
+.answer.sel .letter{background:#2563eb;color:#fff}
+.explanation{display:none;background:#edfbf5;border:1px solid #c6efdd;padding:15px 17px;border-radius:15px;margin-top:16px;color:#166a50;font-size:14px;line-height:1.65}
+.explanation.show{display:block;animation:fade .3s}
+.result-score{font:800 clamp(52px,8vw,72px) var(--font-display);letter-spacing:-.05em;background:linear-gradient(120deg,#1a45a0,#2f9bf0);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1}
+.result-panel{text-align:center;padding:30px 10px}
+.result-panel h2{font-size:24px;font-weight:800;margin:8px 0}
+.result-icon{font-size:56px}
+.empty{padding:30px;text-align:center;color:var(--muted);background:#fff;border:1.5px dashed #cbd8ea;border-radius:18px}
+
+/* ===== Footer & toast ===== */
+.footer{margin-top:40px;padding:22px 0 4px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#7d8ba1;font-size:12px}
+.toast{
+ position:fixed;bottom:24px;right:24px;max-width:360px;padding:14px 18px;background:#0f2a5c;color:#fff;border-radius:15px;
+ box-shadow:var(--shadow-lg);z-index:30;opacity:0;transform:translateY(12px) scale(.98);pointer-events:none;transition:.3s cubic-bezier(.2,.7,.2,1);font-size:13.5px;line-height:1.55
+}
+.toast.show{opacity:1;transform:none}
+
+/* ===== Misi & gamifikasi ===== */
+.bar{height:10px;background:#e6edf7;border-radius:99px;overflow:hidden;margin:13px 0 8px}
+.bar span{display:block;height:100%;background:linear-gradient(90deg,#2866c5,#14b88a);border-radius:99px;transition:width .5s cubic-bezier(.2,.7,.2,1)}
+#missionPanel{background:linear-gradient(135deg,#fff 0%,#f4f8ff 100%);border-color:#d6e3f6;margin-bottom:24px}
+#missionPanel h3{color:#14316a;font-size:20px;font-weight:800}
+#missionPanel small{color:#53647c;font-weight:600;font-size:12.5px}
+.mis-list,#missionPanel .mis-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:14px 0}
+.mis,#missionPanel .mis{
+ display:flex;align-items:center;gap:11px;padding:12px 14px;border:1.5px solid #dae4f1;border-radius:14px;font-size:13.5px;cursor:pointer;
+ background:#fff;text-align:left;width:100%;color:#22385c;font-weight:700;line-height:1.45;transition:.18s
+}
+.mis:hover{background:#eef5ff;border-color:#9fc0f3;transform:translateY(-2px)}
+.mis.ok{color:#116249;background:#e9f9f2;border-color:#b8e8d3}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.badge{font-size:12px;padding:7px 12px;border-radius:99px;background:#eef2f8;color:#7a889e;border:1px solid #e1e8f1;font-weight:600}
+.badge.on{background:linear-gradient(120deg,#fff3cf,#ffe9a6);color:#7d5100;border-color:#f3d98a;font-weight:800;box-shadow:0 4px 10px rgba(245,158,11,.18)}
+.tes-row{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));margin:16px 0}
+.tes-box{border:1px solid var(--line);border-radius:18px;padding:18px;background:#fff;box-shadow:var(--shadow-sm)}
+
+/* ===== Responsif ===== */
+@media(max-width:1100px){
+ .app{grid-template-columns:216px minmax(0,1fr)}
+ .feature-grid,.template-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .builder-layout{grid-template-columns:1fr}
+ .builder-side{position:static;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+ .builder-side h4{grid-column:1/-1}
+ .side-template{margin:0}
+ .builder-side .notice{grid-column:1/-1}
+ .canvas-grid{grid-template-rows:165px 165px 120px}
+}
+@media(max-width:760px){
+ .app{display:block}
+ .sidebar{position:sticky;z-index:10;top:0;height:auto;padding:10px 12px;border-right:0;border-bottom:1px solid var(--line);display:block;overflow:visible}
+ .brand{padding:0 3px}.brand-mark{width:36px;height:36px;font-size:17px;border-radius:12px}
+ .brand strong{font-size:16px}
+ .nav{display:flex;overflow:auto;gap:5px;margin-top:10px;scrollbar-width:none;padding-bottom:2px}
+ .nav::-webkit-scrollbar{display:none}
+ .nav button{white-space:nowrap;padding:8px 12px;font-size:12.5px;border-radius:99px;background:#f2f6fc}
+ .nav button.active:before{display:none}
+ .nav .ico{font-size:14px;width:auto}
+ .side-tip{display:none}
+ .main{padding:18px 13px 30px}
+ .topbar{margin-bottom:18px}
+ .user-chip{font-size:11.5px;padding:6px 11px 6px 7px}
+ .hero{grid-template-columns:1fr;padding:24px;min-height:auto;border-radius:24px}
+ .hero-art{display:none}
+ .hero h2{font-size:31px}
+ .feature-grid,.element-grid,.template-grid{grid-template-columns:1fr 1fr;gap:11px}
+ .feature{padding:16px}.feature p{min-height:0}
+ .stat-row{gap:8px}.stat{padding:12px;gap:8px;flex-direction:column;align-items:flex-start}
+ .stat .stat-icon{display:none}.stat strong{font-size:18px}
+ .page-intro{display:block}.page-intro .pill{margin-top:12px}
+ .field-grid{grid-template-columns:1fr}
+ .panel{padding:16px}
+ .stepper{gap:5px}.step{font-size:10px;gap:4px}.step b{width:22px;height:22px}
+ .canvas-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none;gap:8px}
+ .canvas-box,.canvas-box.partners,.canvas-box.activities,.canvas-box.resources,.canvas-box.value,.canvas-box.relations,.canvas-box.channels,.canvas-box.segments,.canvas-box.cost,.canvas-box.revenue{grid-column:auto;grid-row:auto;min-height:150px}
+ .canvas-box.partners,.canvas-box.value,.canvas-box.segments{min-height:195px}
+ .canvas-box.cost,.canvas-box.revenue{grid-column:span 2}
+ .builder-side{grid-template-columns:1fr}.builder-side h4{grid-column:auto}
+ .mis-list,#missionPanel .mis-list{grid-template-columns:1fr}
+ .toast{left:13px;right:13px;bottom:14px;max-width:none}
+}
+@media(max-width:400px){
+ .feature-grid,.element-grid,.template-grid{grid-template-columns:1fr}
+ .topbar h1{font-size:19px}.canvas-box{padding:9px}.canvas-box h4{font-size:10.5px}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media print{
+ body{background:#fff}.sidebar,.topbar,.toast,.footer,.wizard-nav,.canvas-toolbar .btn,.builder-side,.stepper,.notice,.page-intro .pill{display:none!important}
+ .app{display:block}.main{padding:0;max-width:none}.panel,.canvas-box{box-shadow:none}
+ .canvas-box{break-inside:avoid}.canvas-box textarea{resize:none}
+}
+.bmc-confetti{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden}.bmc-confetti i{position:absolute;top:-18px;width:9px;height:14px;border-radius:2px;animation:bmc-fall 2.4s ease-in forwards}@keyframes bmc-fall{to{transform:translate3d(var(--dx),105vh,0) rotate(780deg);opacity:.9}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+ <div class="brand"><div class="brand-mark">B</div><div><strong>BMC Learn</strong><small>Build Your Business Idea</small></div></div>
+ <nav class="nav" aria-label="Navigasi utama">
+  <button class="active" data-view="home"><span class="ico">⌂</span> Beranda</button>
+  <button data-view="materi"><span class="ico">▤</span> Materi BMC</button>
+  <button data-view="pretest"><span class="ico">📝</span> Pre-test</button>
+  <button data-view="game"><span class="ico">🎮</span> Tebak Elemen</button>
+  <button data-view="builder"><span class="ico">✦</span> Buat BMC</button>
+  <button data-view="templates"><span class="ico">▦</span> Template</button>
+  <button data-view="quiz"><span class="ico">☑</span> Kuis</button>
+  <button data-view="posttest"><span class="ico">🏁</span> Post-test</button>
+ </nav>
+ <div class="side-tip"><div class="bulb">💡</div><b>Ide bisnis dimulai di sini</b><p>Mulai dari masalah pelanggan, lalu bangun model bisnis yang masuk akal.</p><button class="btn primary" style="width:100%" onclick="showView('builder')">Mulai merancang →</button></div>
+</aside>
+<main class="main">
+ <div class="topbar"><div><div class="eyebrow">Media pembelajaran ekonomi</div><h1 id="pageTitle">Halo, calon wirausaha! 👋</h1></div><div class="user-chip"><span>⭐</span><span id="chipText">0 poin • Pemula</span></div></div>
+
+ <section id="home" class="view active">
+  <div class="hero">
+   <div><span class="pill">BELAJAR • COBA • KEMBANGKAN</span><h2>Ubah ide sederhana<br>jadi <span>rencana bisnis.</span></h2><p>Pelajari sembilan elemen Business Model Canvas, coba template usaha, dan susun BMC dengan panduan langkah demi langkah.</p><button class="btn primary" onclick="showView('builder')">✨ Buat BMC pertamamu <span>→</span></button> <button class="btn white" onclick="showView('materi')">Pelajari materi</button></div>
+   <div class="hero-art"><div class="art-circle one"></div><div class="art-circle two"></div><div class="art-card top">📊<br>Model Bisnis</div><div class="art-person">🧑🏻‍💻</div><div class="art-card bottom">💡 Ide → BMC</div></div>
+  </div>
+  <div class="panel" style="margin-bottom:18px"><h3 style="margin:0 0 6px">Tujuan belajar</h3><p style="margin:0;color:var(--muted);font-size:14px;line-height:1.6">Setelah belajar di sini, kamu bisa (1) menjelaskan sembilan elemen BMC, (2) membedakan elemen yang mirip, terutama Key Resources dan Key Activities, dan (3) menyusun BMC untuk ide usahamu.</p></div>
+  <div class="panel" id="missionPanel" style="margin-bottom:22px"></div>
+  <div class="section-head"><div><h3>Jalur belajarmu</h3><p>Ikuti tahapan belajar dari materi, pre-test, latihan, penyusunan BMC, hingga post-test.</p></div></div>
+  <div class="feature-grid">
+   <article class="feature" style="--wash:#e7f0ff;--accent:#2867cb"><div class="feature-icon">📘</div><h4>Pahami 9 Elemen</h4><p>Kenali fungsi setiap bagian BMC lewat penjelasan dan pertanyaan pemantik.</p><button onclick="showView('materi')">Buka materi →</button></article>
+   <article class="feature" style="--wash:#f0eaff;--accent:#7857d9"><div class="feature-icon">🧩</div><h4>Template Inspiratif</h4><p>Jelajahi contoh usaha kuliner, jasa, produk digital, dan bisnis siswa.</p><button onclick="showView('templates')">Jelajahi template →</button></article>
+   <article class="feature" style="--wash:#def9ed;--accent:#07875f"><div class="feature-icon">🚀</div><h4>Susun BMC Terpandu</h4><p>Jawab pertanyaan tentang ide bisnis, lalu buat draf sembilan elemen otomatis.</p><button onclick="showView('builder')">Mulai menyusun →</button></article>
+  </div>
+  <div class="section-head"><div><h3>Ringkasan BMC</h3><p>Bekal sebelum merancang model bisnismu.</p></div></div>
+  <div class="stat-row"><div class="stat"><div class="stat-icon">🧱</div><div><strong>9 elemen</strong><small>Komponen model bisnis</small></div></div><div class="stat"><div class="stat-icon">📝</div><div><strong>4 template</strong><small>Contoh yang bisa diadaptasi</small></div></div><div class="stat"><div class="stat-icon">🎯</div><div><strong>10 soal</strong><small>Kuis pemahaman</small></div></div></div>
+ </section>
+
+ <section id="materi" class="view">
+  <div class="page-intro"><div><h2>Kenali 9 elemen BMC</h2><p>Business Model Canvas membantu kita melihat bagaimana bisnis menciptakan, menyampaikan, dan memperoleh nilai dalam satu tampilan.</p></div><span class="pill">9 KOMPONEN</span></div>
+  <div class="filter-row"><input id="elementSearch" placeholder="Cari elemen BMC..." oninput="renderElements()"></div>
+  <div id="elementGrid" class="element-grid"></div>
+  <div class="notice">💬 <b>Tips belajar:</b> gunakan pertanyaan pemantik pada setiap elemen. Jawaban awal tidak harus sempurna—yang penting logis dan saling berkaitan.</div>
+ </section>
+
+ <section id="builder" class="view">
+  <div class="page-intro"><div><h2>Studio BMC terpandu ✨</h2><p>Jawab beberapa pertanyaan sederhana. Sistem akan menyusun draf sembilan elemen berdasarkan jawabanmu dan pola contoh bisnis yang tersedia.</p></div><span class="pill">DRAF OTOMATIS</span></div>
+  <div class="builder-layout">
+   <div class="panel">
+    <div class="stepper"><div class="step active" id="stepBadge1"><b>1</b> Ide bisnis</div><div class="step" id="stepBadge2"><b>2</b> Arah bisnis</div><div class="step" id="stepBadge3"><b>3</b> Hasil BMC</div></div>
+    <div id="wizardStep1">
+     <div class="field"><label for="businessName">Nama usaha / ide bisnis</label><input id="businessName" placeholder="Contoh: Kedai Jus Segar" value="Kedai Jus Segar"></div>
+     <div class="field"><label for="businessType">Jenis usaha</label><select id="businessType"><option value="kuliner">Kuliner / makanan dan minuman</option><option value="fashion">Fashion / produk kreatif</option><option value="digital">Produk atau jasa digital</option><option value="jasa">Jasa / layanan</option><option value="pendidikan">Pendidikan / kursus</option><option value="umum">Usaha umum / lainnya</option></select></div>
+     <div class="field"><label for="product">Apa produk atau layanan utamamu?</label><input id="product" placeholder="Contoh: jus buah segar tanpa pemanis buatan" value="jus buah segar yang praktis dan menyegarkan"></div>
+     <div class="field"><label for="problem">Masalah pelanggan yang ingin kamu bantu</label><textarea id="problem" placeholder="Contoh: siswa sulit menemukan minuman sehat dengan harga terjangkau">siswa membutuhkan minuman segar yang praktis dan terjangkau</textarea></div>
+     <div class="field"><label for="customer">Siapa calon pelanggan utamamu?</label><input id="customer" placeholder="Contoh: siswa dan pekerja muda" value="siswa, pelajar, dan pekerja muda"></div>
+     <div class="wizard-nav"><span></span><button class="btn primary" onclick="goStep(2)">Lanjut: arah bisnis →</button></div>
+    </div>
+    <div id="wizardStep2" hidden>
+     <div class="wizard-question"><h4>1. Apa yang membuat usahamu berbeda?</h4><p>Pilih nilai utama yang ingin ditawarkan ke pelanggan.</p><div class="option-row" id="valueOptions"><button class="option selected" data-group="value" data-value="harga terjangkau dan kualitas konsisten">Harga terjangkau</button><button class="option" data-group="value" data-value="bahan berkualitas dan pilihan yang bisa disesuaikan">Kualitas / personalisasi</button><button class="option" data-group="value" data-value="layanan cepat dan pemesanan praktis">Cepat dan praktis</button><button class="option" data-group="value" data-value="produk unik dan ramah lingkungan">Unik / berkelanjutan</button></div></div>
+     <div class="wizard-question"><h4>2. Bagaimana pelanggan menemukanmu?</h4><p>Pilih saluran utama yang paling masuk akal.</p><div class="option-row" id="channelOptions"><button class="option selected" data-group="channel" data-value="media sosial, rekomendasi pelanggan, dan penjualan langsung">Media sosial + langsung</button><button class="option" data-group="channel" data-value="marketplace, website, dan konten digital">Marketplace / website</button><button class="option" data-group="channel" data-value="mitra komunitas, acara kampus, dan rekomendasi">Komunitas / acara</button></div></div>
+     <div class="wizard-question"><h4>3. Bagaimana cara memperoleh pendapatan?</h4><p>Pilih pola pendapatan utama.</p><div class="option-row" id="revenueOptions"><button class="option selected" data-group="revenue" data-value="penjualan satuan dan paket bundel">Penjualan satuan / paket</button><button class="option" data-group="revenue" data-value="langganan berkala dan paket premium">Langganan</button><button class="option" data-group="revenue" data-value="biaya jasa, komisi, atau proyek">Biaya jasa / komisi</button></div></div>
+     <div class="field"><label for="budget">Sumber daya yang sudah dimiliki (opsional)</label><input id="budget" placeholder="Contoh: dapur kecil, laptop, keahlian desain"></div>
+     <div class="field"><label for="extra">Catatan khusus (opsional)</label><textarea id="extra" placeholder="Contoh: fokus awal di sekitar kampus, pesan antar pada jam makan siang"></textarea></div>
+     <div class="wizard-nav"><button class="btn ghost" onclick="goStep(1)">← Kembali</button><button class="btn primary" onclick="generateBMC()">✨ Buat 9 elemen otomatis</button></div>
+    </div>
+    <div id="wizardStep3" hidden>
+     <div class="notice">🎉 Draf BMC sudah dibuat berdasarkan ide dan pilihanmu. Periksa kembali setiap elemen, lalu edit agar sesuai dengan kondisi bisnis yang sebenarnya.</div>
+     <div class="canvas-toolbar"><div><b id="canvasBusinessName">BMC Usahaku</b><div style="font-size:11px;color:var(--muted)">Klik kolom untuk menyunting isinya.</div></div><div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn soft" onclick="goStep(2)">← Ubah jawaban</button></div></div>
+     <div id="canvasGrid" class="canvas-grid"></div>
+     <div class="wizard-nav"><button class="btn ghost" onclick="showView('templates')">Lihat template</button><div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn white" onclick="window.print()">🖨 Cetak / PDF</button><button class="btn green" onclick="saveBMC()">✓ Simpan di halaman ini</button></div></div>
+    </div>
+   </div>
+   <aside class="panel builder-side"><h4>Mulai dari contoh</h4>
+    <div class="side-template"><div class="emoji">🥤</div><div><b>Kedai Jus Segar</b><small>Kuliner • sehat dan praktis</small></div><button class="mini-link" onclick="loadTemplate('juice')">Pakai</button></div>
+    <div class="side-template"><div class="emoji">👕</div><div><b>Thrift & Fashion</b><small>Produk • kreatif</small></div><button class="mini-link" onclick="loadTemplate('fashion')">Pakai</button></div>
+    <div class="side-template"><div class="emoji">💻</div><div><b>Jasa Desain Digital</b><small>Jasa • digital</small></div><button class="mini-link" onclick="loadTemplate('design')">Pakai</button></div>
+    <div class="side-template"><div class="emoji">📚</div><div><b>Kelas Belajar</b><small>Pendidikan • kursus</small></div><button class="mini-link" onclick="loadTemplate('class')">Pakai</button></div>
+    <div class="notice">Otomatis di sini berarti sistem merangkai draf dari jawaban dan pola contoh. Draf tetap perlu divalidasi dengan riset pelanggan.</div>
+   </aside>
+  </div>
+ </section>
+
+ <section id="templates" class="view">
+  <div class="page-intro"><div><h2>Template BMC inspiratif 🎨</h2><p>Pilih contoh untuk mempelajari hubungan antar elemen. Gunakan sebagai titik awal, bukan jawaban mutlak untuk semua bisnis.</p></div><span class="pill">SIAP DIADAPTASI</span></div>
+  <div class="filter-row"><input id="templateSearch" placeholder="Cari template..." oninput="renderTemplates()"><select id="templateCategory" onchange="renderTemplates()" style="max-width:220px"><option value="all">Semua kategori</option><option value="kuliner">Kuliner</option><option value="produk">Produk kreatif</option><option value="digital">Digital / jasa</option><option value="pendidikan">Pendidikan</option></select></div>
+  <div id="templateGrid" class="template-grid"></div>
+  <div class="notice">✨ Template berisi contoh awal. Sesuaikan segmen pelanggan, biaya, harga, dan mitra dengan hasil observasi atau wawancara sederhana.</div>
+ </section>
+
+ <section id="quiz" class="view">
+  <div class="page-intro"><div><h2>Uji pemahaman BMC 🎯</h2><p>Jawab 10 soal pilihan ganda. Setelah menjawab, kamu langsung mendapat skor sementara dan pembahasan.</p></div><span class="pill">10 SOAL</span></div>
+  <div class="quiz-card" id="quizCard"></div>
+ </section>
+<section id="game" class="view">
+  <div class="page-intro"><div><h2>Tebak Elemen BMC 🎮</h2><p>Baca situasi bisnis, lalu pilih elemen BMC yang tepat. Tiap jawaban benar menambah 10 poin.</p></div><span class="pill">12 SITUASI</span></div>
+  <div class="quiz-card" id="gameCard"></div>
+ </section>
+<section id="tes" class="view">
+  <div class="page-intro"><div><h2 id="tesHeading">Pre-test 📝</h2><p id="tesDescription">Kerjakan tes awal ini sebelum mempelajari materi untuk mengetahui pemahaman awalmu tentang Business Model Canvas.</p></div><span class="pill" id="tesPill">TES AWAL • 10 SOAL</span></div>
+  <div class="quiz-card" id="tesCard"><div class="empty">Memuat soal tes…</div></div>
+ </section>
+ <section id="submit" class="view">
+   <div class="page-intro"><div><h2>Kirim hasil belajar 📤</h2><p>Kirim draf BMC dan hasil tes ke pengajar. Data baru masuk ke Google Sheets setelah koneksi pengumpulan dikonfigurasi.</p></div><span class="pill">PENGUMPULAN HASIL</span></div>
+   <div class="panel" style="max-width:760px">
+    <div class="notice"><b>Privasi:</b> gunakan nama panggilan atau kode peserta bila memungkinkan. Jangan masukkan informasi pribadi yang tidak diperlukan. Hasil yang dikirim akan dapat dilihat oleh pengelola spreadsheet.</div>
+    <div class="field-grid">
+     <div class="field"><label for="submitName">Nama panggilan / kode peserta</label><input id="submitName" maxlength="80" placeholder="Contoh: Siswa 01" /></div>
+     <div class="field"><label for="submitClass">Kelas / kelompok</label><input id="submitClass" maxlength="80" placeholder="Contoh: Pendidikan Ekonomi 3A" /></div>
+    </div>
+    <div id="submitSummary" class="notice">Ringkasan hasil akan ditampilkan di sini.</div>
+    <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;margin:16px 0"><input id="submitConsent" type="checkbox" style="margin-top:4px"><span>Saya setuju mengirim jawaban BMC dan hasil belajar yang tercantum di atas kepada pengelola untuk keperluan pembelajaran/proyek.</span></label>
+    <div style="display:flex;gap:9px;flex-wrap:wrap"><button class="btn primary" id="submitBtn" onclick="submitResults()">📤 Kirim hasil ke pengajar</button><button class="btn white" onclick="downloadResultsJSON()">⬇ Unduh salinan JSON</button></div>
+    <p id="submitStatus" role="status" style="font-size:13px;color:var(--muted);margin-bottom:0"></p>
+   </div>
+  </section>
+ <footer class="footer"><span>© BMC Learn • Media Pembelajaran Ekonomi</span><span>Belajar bisnis, buka peluang masa depan ✦</span></footer>
+</main>
+</div>
+<div id="toast" class="toast" role="status"></div>
+<script>
+const elements=[
+ {key:'segments',name:'Customer Segments',id:1,icon:'👥',accent:'#e79a25',wash:'#fff5e7',desc:'Siapa kelompok pelanggan yang ingin dilayani?',detail:'Tentukan kelompok orang atau organisasi yang paling membutuhkan tawaran bisnismu.',questions:['Siapa pelanggan utama?','Apa kebutuhan atau kebiasaan mereka?','Apakah ada segmen sekunder?'],example:'Siswa, pelajar, dan pekerja muda yang mencari minuman segar dengan harga terjangkau.'},
+ {key:'value',name:'Value Propositions',id:2,icon:'💎',accent:'#119b83',wash:'#e5fbf4',desc:'Nilai atau manfaat apa yang membuat pelanggan memilihmu?',detail:'Jelaskan masalah yang diselesaikan atau manfaat yang membuat produk/jasa relevan.',questions:['Masalah apa yang dibantu?','Apa manfaat paling kuat?','Apa pembeda dari alternatif lain?'],example:'Jus buah segar yang praktis, pilihan rasa beragam, dan harga ramah siswa.'},
+ {key:'channels',name:'Channels',id:3,icon:'🚚',accent:'#397ce5',wash:'#eaf3ff',desc:'Bagaimana produk ditemukan, dibeli, dan diterima?',detail:'Saluran adalah cara bisnis berkomunikasi dengan pelanggan dan menyampaikan produk.',questions:['Pelanggan menemukan produk di mana?','Bagaimana mereka membeli?','Bagaimana produk diterima?'],example:'Instagram dan WhatsApp untuk promosi, penjualan langsung di dekat kampus, serta pesan antar.'},
+ {key:'relations',name:'Customer Relationships',id:4,icon:'💗',accent:'#dc6682',wash:'#fff0f3',desc:'Bagaimana menjaga hubungan dengan pelanggan?',detail:'Rencanakan cara menarik, membantu, dan mempertahankan pelanggan.',questions:['Bagaimana pelanggan dilayani?','Bagaimana menerima masukan?','Apa yang mendorong pembelian ulang?'],example:'Respons cepat melalui chat, kartu loyalitas, promo pelanggan tetap, dan survei singkat.'},
+ {key:'revenue',name:'Revenue Streams',id:5,icon:'🪙',accent:'#c28b18',wash:'#fff8df',desc:'Dari mana bisnis mendapatkan pendapatan?',detail:'Tuliskan sumber uang yang dibayarkan pelanggan, bukan sekadar keuntungan.',questions:['Apa yang dibayar pelanggan?','Bagaimana metode pembayarannya?','Adakah sumber pendapatan lain?'],example:'Penjualan jus satuan, paket bundel, dan pesanan acara kampus.'},
+ {key:'resources',name:'Key Resources',id:6,icon:'⚙️',accent:'#139a9b',wash:'#e4fbfb',desc:'Sumber daya utama apa yang dibutuhkan?',detail:'Sumber daya dapat berupa aset fisik, keahlian, manusia, uang, atau aset intelektual.',questions:['Peralatan atau aset apa yang dibutuhkan?','Keahlian siapa yang diperlukan?','Apa sumber daya yang sudah tersedia?'],example:'Blender, kulkas, bahan baku, pemasok buah, peralatan kemasan, dan tenaga penjual.'},
+ {key:'activities',name:'Key Activities',id:7,icon:'🛠️',accent:'#7356d8',wash:'#f0edff',desc:'Kegiatan penting apa yang harus dilakukan?',detail:'Aktivitas utama adalah pekerjaan penting agar tawaran nilai tersampaikan.',questions:['Apa yang harus dilakukan setiap hari?','Bagaimana menjaga kualitas?','Apa kegiatan promosi dan distribusi?'],example:'Memilih buah, meracik jus, menjaga kebersihan, mengelola pesanan, dan promosi.'},
+ {key:'partners',name:'Key Partnerships',id:8,icon:'🤝',accent:'#4776d5',wash:'#edf3ff',desc:'Siapa mitra yang membantu bisnis berjalan?',detail:'Mitra dapat membantu memasok, mendistribusikan, memproduksi, atau memperluas jangkauan.',questions:['Siapa pemasok utama?','Apa yang lebih efisien jika dibantu mitra?','Komunitas mana yang relevan?'],example:'Pemasok buah lokal, penyedia kemasan, kurir lokal, dan komunitas kampus.'},
+ {key:'cost',name:'Cost Structure',id:9,icon:'🧾',accent:'#db5d67',wash:'#fff0f0',desc:'Biaya apa saja yang muncul saat menjalankan bisnis?',detail:'Catat biaya utama untuk menciptakan, memasarkan, dan menyampaikan nilai.',questions:['Apa biaya tetap dan variabel?','Biaya apa yang paling besar?','Apa yang dibutuhkan untuk menjaga kualitas?'],example:'Buah, susu atau bahan tambahan, kemasan, listrik, sewa tempat, promosi, dan ongkos kirim.'}
+];
+const templateData={
+ juice:{id:'juice',name:'Kedai Jus Segar',emoji:'🥤',category:'kuliner',tags:['Kuliner','Sehat','Siswa'],desc:'Minuman buah segar dengan pilihan rasa dan harga terjangkau.',type:'kuliner',product:'jus buah segar yang praktis dan menyegarkan',problem:'siswa membutuhkan minuman segar yang praktis dan terjangkau',customer:'siswa, pelajar, dan pekerja muda',value:'harga terjangkau dan kualitas konsisten',channel:'media sosial, rekomendasi pelanggan, dan penjualan langsung',revenue:'penjualan satuan dan paket bundel',data:{partners:'Pemasok buah lokal, pemasok kemasan, kurir lokal, komunitas kampus.',activities:'Memilih buah, meracik jus, menjaga kebersihan, mengelola pesanan, promosi.',value:'Jus buah segar dengan pilihan rasa, harga ramah siswa, dan kemasan praktis.',relations:'Respons cepat melalui chat, kartu loyalitas, promo pelanggan tetap.',segments:'Siswa, pelajar, dan pekerja muda yang mencari minuman segar terjangkau.',resources:'Blender, kulkas, bahan baku, kemasan, pemasok buah, tenaga penjual.',channels:'Instagram, WhatsApp, penjualan langsung di sekitar kampus, pesan antar.',cost:'Buah, bahan tambahan, kemasan, listrik, sewa tempat, promosi, ongkos kirim.',revenue:'Penjualan jus satuan, paket bundel, dan pesanan acara kampus.'}},
+ fashion:{id:'fashion',name:'Thrift & Fashion Pilihan',emoji:'👕',category:'produk',tags:['Fashion','Kreatif','Online'],desc:'Pilihan pakaian preloved yang dikurasi, terjangkau, dan punya karakter.',type:'fashion',product:'pakaian preloved terkurasi dan aksesori pilihan',problem:'anak muda ingin pakaian unik dengan harga terjangkau dan pilihan yang lebih berkelanjutan',customer:'siswa dan anak muda yang menyukai fashion unik',value:'produk unik dan ramah lingkungan',channel:'media sosial, rekomendasi pelanggan, dan penjualan langsung',revenue:'penjualan satuan dan paket bundel',data:{partners:'Pemasok pakaian preloved, jasa laundry, fotografer, kurir, kreator lokal.',activities:'Kurasi produk, pemeriksaan kondisi, pencucian, foto produk, pengemasan.',value:'Pakaian pilihan dengan kondisi dijelaskan transparan, harga terjangkau, dan gaya unik.',relations:'Panduan ukuran, layanan chat, unggahan pelanggan, promo pembelian berikutnya.',segments:'Siswa dan anak muda yang menyukai fashion unik dan belanja lebih sadar.',resources:'Stok pakaian, rak penyimpanan, kamera ponsel, akun toko, kemampuan kurasi.',channels:'Instagram, TikTok, marketplace, bazar kampus, dan chat.',cost:'Pembelian stok, laundry, perbaikan, kemasan, ongkos kirim, promosi.',revenue:'Penjualan pakaian satuan, paket outfit, dan aksesori.'}},
+ design:{id:'design',name:'Jasa Desain Digital',emoji:'💻',category:'digital',tags:['Jasa','Digital','Kreatif'],desc:'Layanan desain konten, poster, dan identitas visual untuk usaha kecil.',type:'digital',product:'jasa desain konten media sosial, poster, dan identitas visual sederhana',problem:'UMKM membutuhkan materi visual yang menarik tanpa harus merekrut desainer tetap',customer:'UMKM, organisasi siswa, dan kreator pemula',value:'layanan cepat dan pemesanan praktis',channel:'media sosial, marketplace jasa, portofolio online, dan rekomendasi',revenue:'biaya jasa, komisi, atau proyek',data:{partners:'Percetakan, fotografer, penulis konten, dan komunitas UMKM.',activities:'Brief klien, riset referensi, desain, revisi, dan penyerahan file.',value:'Desain visual yang rapi, sesuai kebutuhan, dan mudah digunakan untuk promosi.',relations:'Konsultasi singkat, pembaruan progres, batas revisi yang jelas, layanan purna jual.',segments:'UMKM, organisasi siswa, komunitas, dan kreator pemula.',resources:'Laptop, perangkat lunak desain, portofolio, kreativitas, dan koneksi internet.',channels:'Instagram, portofolio online, marketplace jasa, LinkedIn, rekomendasi.',cost:'Perangkat lunak, internet, perangkat kerja, promosi, dan biaya administrasi.',revenue:'Biaya desain per proyek, paket konten bulanan, dan layanan tambahan.'}},
+ class:{id:'class',name:'Kelas Belajar Teman Sebaya',emoji:'📚',category:'pendidikan',tags:['Pendidikan','Kursus','Siswa'],desc:'Kelas pendamping belajar dan bimbingan kelompok dengan jadwal fleksibel.',type:'pendidikan',product:'kelas belajar kelompok dan bimbingan materi secara daring atau tatap muka',problem:'pelajar membutuhkan penjelasan tambahan yang terjangkau dan suasana belajar yang nyaman',customer:'siswa SMA dan siswa kelas X',value:'layanan belajar yang personal dan terjangkau',channel:'komunitas sekolah/kampus, media sosial, dan rekomendasi',revenue:'langganan berkala dan paket premium',data:{partners:'Tutor sebaya, komunitas belajar, ruang belajar, dan organisasi kampus.',activities:'Menyusun materi, mengajar, memberi latihan, memantau kemajuan, evaluasi.',value:'Penjelasan sederhana, kelompok kecil, jadwal fleksibel, dan latihan terarah.',relations:'Grup tanya jawab, umpan balik setelah kelas, dan laporan kemajuan.',segments:'Siswa SMA dan siswa yang memerlukan pendampingan belajar.',resources:'Tutor, materi belajar, platform pertemuan, alat presentasi, dan ruang kelas.',channels:'Grup komunitas, Instagram, poster kampus, dan rekomendasi.',cost:'Honor tutor, platform digital, materi, promosi, dan sewa ruang jika diperlukan.',revenue:'Biaya per sesi, paket kelas, dan program belajar berkala.'}}
+};
+const genericMap={
+ kuliner:{partners:'Pemasok bahan baku, penyedia kemasan, kurir lokal, dan komunitas sekitar.',activities:'Menyiapkan produk, menjaga mutu dan kebersihan, mengelola pesanan, dan promosi.',resources:'Bahan baku, peralatan produksi, kemasan, tempat kerja, dan tenaga.',cost:'Bahan baku, kemasan, operasional, promosi, transportasi, dan tenaga.',revenue:'Penjualan produk satuan, paket bundel, dan pesanan khusus.'},
+ fashion:{partners:'Pemasok bahan atau produk, mitra produksi, kurir, dan kreator lokal.',activities:'Memilih produk, menyiapkan stok, membuat konten, melayani pesanan, dan mengemas.',resources:'Stok produk, alat kerja, saluran penjualan, keterampilan, dan tenaga.',cost:'Stok atau bahan, produksi, kemasan, promosi, transportasi, dan operasional.',revenue:'Penjualan produk, paket, dan pesanan khusus.'},
+ digital:{partners:'Platform digital, mitra kreatif, penyedia pembayaran, dan komunitas pengguna.',activities:'Mengembangkan layanan, menguji kualitas, melayani pengguna, dan memasarkan produk.',resources:'Perangkat kerja, perangkat lunak, keterampilan, koneksi internet, dan aset digital.',cost:'Perangkat lunak, internet, pengembangan, promosi, dan biaya operasional.',revenue:'Penjualan produk digital, biaya layanan, paket berlangganan, atau proyek.'},
+ jasa:{partners:'Mitra ahli, pemasok alat, komunitas, dan penyedia layanan pendukung.',activities:'Menerima kebutuhan klien, memberi layanan, menjaga kualitas, dan menindaklanjuti masukan.',resources:'Keahlian, alat kerja, waktu, portofolio, dan jaringan.',cost:'Peralatan, transportasi, internet, promosi, dan tenaga kerja.',revenue:'Biaya jasa per sesi, paket layanan, dan proyek khusus.'},
+ pendidikan:{partners:'Tutor, komunitas belajar, penyedia ruang atau platform, dan organisasi pendidikan.',activities:'Menyusun materi, mengajar, memberi latihan, mengevaluasi, dan memberi umpan balik.',resources:'Pengajar, materi, perangkat belajar, platform, dan tempat belajar.',cost:'Honor pengajar, materi, platform, promosi, dan fasilitas.',revenue:'Biaya per sesi, paket kelas, dan program belajar berkala.'},
+ umum:{partners:'Pemasok, mitra distribusi, komunitas pelanggan, dan penyedia layanan pendukung.',activities:'Mengembangkan tawaran, melayani pelanggan, menjaga kualitas, dan memasarkan produk.',resources:'Peralatan, bahan atau stok, keahlian, tenaga, dan saluran penjualan.',cost:'Bahan atau stok, operasional, tenaga kerja, promosi, dan distribusi.',revenue:'Penjualan produk atau jasa, paket, dan pesanan khusus.'}
+};
+let chosen={value:'harga terjangkau dan kualitas konsisten',channel:'media sosial, rekomendasi pelanggan, dan penjualan langsung',revenue:'penjualan satuan dan paket bundel'};
+let currentBMC={};let quizIndex=0,quizScore=0,quizAnswered=false,quizFinished=false;
+const quizQuestions=[
+ {q:'Apa fungsi utama Business Model Canvas?',a:['Membuat laporan keuangan tahunan saja','Memetakan cara bisnis menciptakan, menyampaikan, dan memperoleh nilai','Menentukan logo dan warna merek','Menggantikan semua riset pelanggan'],correct:1,why:'BMC memberikan gambaran menyeluruh tentang logika model bisnis melalui sembilan elemen yang saling berkaitan.'},
+ {q:'Bagian mana yang menjelaskan kelompok pelanggan yang dilayani?',a:['Key Resources','Channels','Customer Segments','Cost Structure'],correct:2,why:'Customer Segments menjelaskan kelompok pelanggan yang menjadi sasaran bisnis.'},
+ {q:'Contoh Value Propositions yang paling tepat adalah…',a:['Daftar semua karyawan','Jus segar terjangkau yang praktis untuk siswa','Biaya sewa toko per bulan','Akun media sosial perusahaan'],correct:1,why:'Value Propositions menjelaskan manfaat atau nilai yang ditawarkan kepada pelanggan.'},
+ {q:'Instagram, marketplace, dan toko fisik dalam BMC termasuk…',a:['Channels','Key Partnerships','Revenue Streams','Customer Relationships'],correct:0,why:'Channels adalah saluran komunikasi, penjualan, dan distribusi untuk menjangkau pelanggan.'},
+ {q:'Program poin untuk pelanggan yang sering membeli paling dekat dengan elemen…',a:['Cost Structure','Customer Relationships','Key Activities','Key Resources'],correct:1,why:'Program loyalitas merupakan salah satu cara membangun dan mempertahankan hubungan pelanggan.'},
+ {q:'Penjualan paket bulanan merupakan contoh…',a:['Revenue Streams','Key Partnerships','Customer Segments','Key Activities'],correct:0,why:'Revenue Streams menjelaskan bagaimana bisnis memperoleh uang dari pelanggan.'},
+ {q:'Blender, laptop, keterampilan, dan merek termasuk…',a:['Channels','Key Resources','Cost Structure','Value Propositions'],correct:1,why:'Key Resources meliputi sumber daya fisik, intelektual, manusia, maupun finansial.'},
+ {q:'Kegiatan meracik produk dan memeriksa kualitas termasuk…',a:['Key Activities','Customer Segments','Revenue Streams','Customer Relationships'],correct:0,why:'Key Activities adalah pekerjaan utama yang perlu dilakukan agar model bisnis berjalan.'},
+ {q:'Pemasok bahan baku dan mitra pengiriman termasuk…',a:['Key Partnerships','Value Propositions','Cost Structure','Channels saja'],correct:0,why:'Key Partnerships memuat pihak luar yang membantu bisnis menjalankan modelnya. Mitra pengiriman juga dapat berperan dalam Channels.'},
+ {q:'Biaya bahan baku, sewa, dan promosi dicatat dalam…',a:['Customer Segments','Key Activities','Cost Structure','Revenue Streams'],correct:2,why:'Cost Structure merangkum biaya penting untuk menjalankan model bisnis.'}
+];
+function showView(id){
+ const requested=id;
+ if(id==='pretest'||id==='posttest'){window.bmcTestStage=id;id='tes';}
+ document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
+ document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===requested));
+ const titles={home:'Halo, calon wirausaha! 👋',materi:'Materi Business Model Canvas',pretest:'Pre-test',game:'Tebak Elemen BMC',builder:'Rancang model bisnismu',templates:'Pilih template BMC',quiz:'Kuis pemahaman BMC',posttest:'Post-test',tes:(window.bmcTestStage==='posttest'?'Post-test':'Pre-test'),submit:'Kirim hasil belajar'};
+ document.getElementById('pageTitle').textContent=titles[requested]||titles[id]||'BMC Learn';
+ if(id==='materi')renderElements();if(id==='templates')renderTemplates();if(id==='quiz')renderQuiz();
+ if(id==='tes')renderTes();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+function renderElements(){
+ const q=(document.getElementById('elementSearch')?.value||'').toLowerCase();
+ const list=elements.filter(e=>(e.name+' '+e.desc+' '+e.example).toLowerCase().includes(q));
+ document.getElementById('elementGrid').innerHTML=list.map(e=>`<article class="element-card" style="--accent:${e.accent};--wash:${e.wash}" onclick="showElement('${e.key}')"><div class="element-top"><span class="num">ELEMEN ${String(e.id).padStart(2,'0')}</span><span class="e-icon">${e.icon}</span></div><h4>${e.name}</h4><p>${e.desc}</p><span class="learn">Pelajari elemen ↗</span></article>`).join('')||'<div class="empty">Elemen tidak ditemukan. Coba kata kunci lain.</div>';
+}
+function showElement(key){
+ const e=elements.find(x=>x.key===key);if(!e)return;
+ toast(e.name+': '+e.detail+' Contoh: '+e.example);
+}
+function renderTemplates(){
+ const q=(document.getElementById('templateSearch')?.value||'').toLowerCase(),cat=document.getElementById('templateCategory')?.value||'all';
+ const items=Object.values(templateData).filter(t=>(cat==='all'||t.category===cat)&&(t.name+' '+t.desc+' '+t.tags.join(' ')).toLowerCase().includes(q));
+ document.getElementById('templateGrid').innerHTML=items.map(t=>`<article class="template-card"><div class="template-preview" style="--template-bg:${t.id==='juice'?'#e7f6ed':t.id==='fashion'?'#f8eafa':t.id==='design'?'#e9f1ff':'#fff4d9'}"><div class="preview-cell">👥<br>Segmen</div><div class="preview-cell">💎 Nilai</div><div class="preview-cell">🚚 Saluran</div><div class="preview-cell">⚙️ Aktivitas & sumber daya</div></div><div class="template-body"><h4>${t.emoji} ${t.name}</h4><p>${t.desc}</p><div class="template-tags">${t.tags.map(tag=>`<span>${tag}</span>`).join('')}</div><button class="btn primary" style="width:100%" onclick="loadTemplate('${t.id}')">Gunakan template →</button></div></article>`).join('')||'<div class="empty">Template tidak ditemukan. Coba kata kunci lain.</div>';
+}
+function goStep(n){
+ [1,2,3].forEach(i=>{document.getElementById('wizardStep'+i).hidden=i!==n;const b=document.getElementById('stepBadge'+i);b.classList.toggle('active',i===n);b.classList.toggle('done',i<n);});
+ if(n===3)document.getElementById('canvasBusinessName').textContent='BMC — '+(document.getElementById('businessName').value.trim()||'Usahaku');
+}
+document.querySelectorAll('.option-row').forEach(row=>row.addEventListener('click',e=>{const btn=e.target.closest('.option');if(!btn)return;row.querySelectorAll('.option').forEach(x=>x.classList.remove('selected'));btn.classList.add('selected');chosen[btn.dataset.group]=btn.dataset.value;}));
+function generateBMC(){
+ const name=document.getElementById('businessName').value.trim()||'Usaha Baru',type=document.getElementById('businessType').value,product=document.getElementById('product').value.trim()||'produk atau layanan utama',problem=document.getElementById('problem').value.trim()||'kebutuhan pelanggan yang belum terpenuhi',customer=document.getElementById('customer').value.trim()||'pelanggan yang membutuhkan solusi',extra=document.getElementById('extra').value.trim(),budget=document.getElementById('budget').value.trim();
+ const g=genericMap[type]||genericMap.umum;
+ currentBMC={
+ partners:g.partners,
+ activities:g.activities,
+ value:`${product} yang menawarkan ${chosen.value}. Solusi ini ditujukan untuk membantu ${problem}.`,
+ relations:`Pelayanan responsif melalui chat, meminta umpan balik, informasi produk yang jelas, dan penawaran untuk pelanggan yang kembali.`,
+ segments:`${customer}. Fokus awal: kelompok yang paling sering mengalami masalah berupa ${problem}.`,
+ resources:budget?`${g.resources} Sumber daya awal yang tersedia: ${budget}.` :g.resources,
+ channels:`${chosen.channel}. Pastikan saluran dipilih sesuai kebiasaan pelanggan dan kapasitas usaha.`,
+ cost:g.cost,
+ revenue:`${chosen.revenue}. Harga dan target penjualan perlu diuji dengan biaya serta kesediaan pelanggan membayar.`
+ };
+ if(extra)currentBMC.activities+=` Catatan pelaksanaan: ${extra}.`;
+ currentBMC.name=name;currentBMC.type=type;currentBMC.product=product;currentBMC.customer=customer;currentBMC.problem=problem;
+ drawCanvas();goStep(3);toast('Draf sembilan elemen berhasil disusun. Silakan periksa dan edit.');
+}
+function drawCanvas(){
+ const colors={partners:'#4776d5',activities:'#7356d8',resources:'#139a9b',value:'#119b83',relations:'#dc6682',channels:'#397ce5',segments:'#e79a25',cost:'#db5d67',revenue:'#c28b18'};
+ const map=[['partners','Key Partnerships','🤝'],['activities','Key Activities','🛠️'],['resources','Key Resources','⚙️'],['value','Value Propositions','💎'],['relations','Customer Relationships','💗'],['channels','Channels','🚚'],['segments','Customer Segments','👥'],['cost','Cost Structure','🧾'],['revenue','Revenue Streams','🪙']];
+ document.getElementById('canvasGrid').innerHTML=map.map(([key,title,icon])=>`<div class="canvas-box ${key}" style="--accent:${colors[key]}"><h4>${icon} ${title}</h4><textarea aria-label="${title}" data-bmc="${key}" oninput="currentBMC['${key}']=this.value">${escapeHtml(currentBMC[key]||'')}</textarea><div class="hint">Klik teks untuk mengedit</div></div>`).join('');
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function loadTemplate(id){
+ const t=templateData[id];if(!t)return;
+ document.getElementById('businessName').value=t.name;document.getElementById('businessType').value=t.type;document.getElementById('product').value=t.product;document.getElementById('problem').value=t.problem;document.getElementById('customer').value=t.customer;
+ chosen={value:t.value,channel:t.channel,revenue:t.revenue};
+ document.querySelectorAll('.option').forEach(b=>b.classList.toggle('selected',b.dataset.value===chosen[b.dataset.group]));
+ currentBMC={...t.data,name:t.name,type:t.type,product:t.product,customer:t.customer,problem:t.problem};
+ drawCanvas();goStep(3);showView('builder');toast('Template '+t.name+' dimuat. Kamu bisa mengedit semua elemen.');
+}
+function downloadBMC(){
+ const payload={namaUsaha:currentBMC.name||'BMC Usahaku',jenisUsaha:currentBMC.type||'',elemenBMC:Object.fromEntries(elements.map(e=>[e.name,currentBMC[e.key]||'']))};
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='bmc-'+(currentBMC.name||'usahaku').toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.json';a.click();URL.revokeObjectURL(url);toast('File BMC diunduh.');
+}
+function saveBMC(){localStorage.setItem('bmclearn-draft',JSON.stringify(currentBMC));toast('Draf tersimpan di browser ini.');}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>el.classList.remove('show'),3400);}
+function renderQuiz(){
+ const card=document.getElementById('quizCard');
+ if(quizFinished){const score=Math.round(quizScore/quizQuestions.length*100);card.innerHTML=`<div class="result-panel"><div class="result-icon">${score>=80?'🏆':score>=60?'🌟':'📚'}</div><div class="eyebrow">HASIL KUIS</div><div class="result-score">${score}<span style="font-size:20px;color:#8190a7">/100</span></div><h2>${score>=80?'Hebat! Pemahamanmu kuat.':score>=60?'Bagus, terus berlatih!':'Ayo pelajari lagi sembilan elemen.'}</h2><p style="color:var(--muted)">${quizScore} dari ${quizQuestions.length} jawaban benar.</p><button class="btn primary" onclick="resetQuiz()">↻ Ulangi kuis</button> <button class="btn white" onclick="showView('materi')">Pelajari materi</button></div>`;return;}
+ const q=quizQuestions[quizIndex];
+ card.innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px"><span class="pill">SOAL ${quizIndex+1} DARI ${quizQuestions.length}</span><span style="font-size:12px;color:var(--muted)">Skor sementara: <b>${Math.round(quizScore/quizQuestions.length*100)}</b></span></div><div class="quiz-progress"><span style="width:${quizIndex/quizQuestions.length*100}%"></span></div><h3 class="quiz-question">${q.q}</h3><div class="answer-list">${q.a.map((a,i)=>`<button class="answer" onclick="answerQuiz(${i})" id="answer${i}"><span class="letter">${String.fromCharCode(65+i)}</span><span>${a}</span></button>`).join('')}</div><div class="explanation" id="quizExplanation"></div><div class="wizard-nav"><span></span><button class="btn primary" id="quizNext" disabled onclick="nextQuestion()">${quizIndex===quizQuestions.length-1?'Lihat hasil':'Soal berikutnya →'}</button></div>`;
+ quizAnswered=false;
+}
+function answerQuiz(i){
+ if(quizAnswered)return;quizAnswered=true;const q=quizQuestions[quizIndex];const correct=i===q.correct;if(correct)quizScore++;
+ q.a.forEach((_,j)=>{const b=document.getElementById('answer'+j);if(j===q.correct)b.classList.add('correct');else if(j===i)b.classList.add('wrong');b.disabled=true;});
+ const exp=document.getElementById('quizExplanation');exp.classList.add('show');exp.innerHTML=`<b>${correct?'✓ Jawaban benar!':'↻ Belum tepat.'}</b> ${q.why}`;
+ document.getElementById('quizNext').disabled=false;document.getElementById('quizNext').style.opacity='1';
+}
+function nextQuestion(){if(!quizAnswered)return;if(quizIndex<quizQuestions.length-1)quizIndex++;else quizFinished=true;renderQuiz();}
+function resetQuiz(){quizIndex=0;quizScore=0;quizAnswered=false;quizFinished=false;renderQuiz();}
+
+/* ===== Gamifikasi ===== */
+const MIS=[['materi','📘 Pelajari materi BMC','materi'],['pre','📝 Kerjakan pre-test','pretest'],['game','🎮 Tebak sembilan elemen','game'],['bmc','✍️ Susun BMC usahamu','builder'],['template','🧩 Pelajari template','templates'],['quiz','🎯 Selesaikan kuis','quiz'],['post','🏁 Kerjakan post-test','posttest']];
+const LV=[[0,'Pemula'],[50,'Calon Wirausaha'],[120,'Pengusaha Muda'],[200,'Master BMC']];
+const QEL=[null,'segments','value','channels','relations','revenue','resources','activities','partners','cost'];
+const gameData=[
+ ['Kedai jus membeli blender dan freezer untuk membuat minuman.','resources','Blender dan freezer adalah aset yang DIMILIKI usaha, jadi masuk Key Resources.'],
+ ['Setiap pagi penjual mengupas dan meracik buah menjadi jus.','activities','Mengupas dan meracik adalah kegiatan yang DIKERJAKAN, jadi masuk Key Activities.'],
+ ['Kedai bekerja sama dengan petani lokal yang rutin memasok buah.','partners','Pihak luar yang membantu usaha berjalan adalah Key Partnerships.'],
+ ['Siswa menjual mie lidi lewat Instagram dan WhatsApp.','channels','Instagram dan WhatsApp adalah jalur menjangkau dan menjual ke pelanggan: Channels.'],
+ ['Penjual membayar sewa tempat dan listrik setiap bulan.','cost','Sewa dan listrik adalah pengeluaran, jadi masuk Cost Structure.'],
+ ['Penjual membalas chat pelanggan dan memberi diskon untuk pelanggan langganan.','relations','Cara menjaga hubungan dengan pelanggan adalah Customer Relationships.'],
+ ['Usaha camilan pedas ini ditujukan untuk pelajar SMA.','segments','Kelompok pelanggan yang dilayani adalah Customer Segments.'],
+ ['Uang masuk dari penjualan satuan dan paket hemat.','revenue','Sumber uang masuk dari pelanggan adalah Revenue Streams.'],
+ ['Pemilik jasa desain memakai laptop dan keahlian mendesain miliknya.','resources','Laptop dan keahlian adalah sumber daya yang DIMILIKI: Key Resources.'],
+ ['Tim membuat konten promosi dan mengemas pesanan setiap hari.','activities','Membuat konten dan mengemas adalah kegiatan rutin: Key Activities.'],
+ ['Camilan tanpa pengawet dengan harga terjangkau menjadi alasan pelanggan memilih usaha ini.','value','Manfaat yang membuat pelanggan memilih adalah Value Propositions.'],
+ ['Usaha membayar biaya kemasan dan bahan baku setiap produksi.','cost','Biaya bahan dan kemasan dicatat di Cost Structure.']
+];
+let G={pts:0,done:{},got:{},el:{}};
+try{G=Object.assign(G,JSON.parse(localStorage.getItem('bmclearn-game')||'{}'));}catch(e){}
+function saveG(){try{localStorage.setItem('bmclearn-game',JSON.stringify(G));}catch(e){}}
+function lvl(){let l=LV[0];LV.forEach(x=>{if(G.pts>=x[0])l=x;});return l;}
+function updateChip(){const c=document.getElementById('chipText');if(c)c.textContent=G.pts+' poin • '+lvl()[1];}
+function badgeList(){const b=elements.map(e=>({n:'Pakar '+e.name,on:(G.el[e.key]||0)>=2}));b.push({n:'Penyusun BMC',on:!!G.done.bmc});b.push({n:'Calon Pengusaha Muda',on:MIS.every(m=>G.done[m[0]])});return b;}
+function award(id,pts,el){if(G.got[id])return;const before=badgeList().filter(b=>b.on).length;G.got[id]=1;G.pts+=pts;if(el)G.el[el]=(G.el[el]||0)+1;const after=badgeList();const nw=after.filter(b=>b.on);if(nw.length>before)toast('🏅 Badge baru: '+nw[nw.length-1].n);saveG();updateChip();renderMissions();}
+function done(m){if(G.done[m])return;G.done[m]=1;toast('✅ Misi selesai! +10 poin');G.pts+=10;saveG();updateChip();if(MIS.every(x=>G.done[x[0]]))toast('🏆 Semua misi selesai!');renderMissions();}
+function renderMissions(){const p=document.getElementById('missionPanel');if(!p)return;const n=MIS.filter(m=>G.done[m[0]]).length;const nx=LV.find(x=>x[0]>G.pts);
+ p.innerHTML=`<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><h3 style="margin:0">Misi belajar</h3><span class="pill" style="margin:0">${G.pts} poin • ${lvl()[1]}</span></div><div class="bar"><span style="width:${n/MIS.length*100}%"></span></div><small style="color:var(--muted)">${n} dari ${MIS.length} misi selesai${nx?' • '+(nx[0]-G.pts)+' poin lagi menuju '+nx[1]:''}</small><div class="mis-list">${MIS.map(m=>`<button class="mis ${G.done[m[0]]?'ok':''}" onclick="showView('${m[2]}')"><span>${G.done[m[0]]?'✅':'⬜'}</span><span>${m[1]}</span></button>`).join('')}</div><div class="badges">${badgeList().map(b=>`<span class="badge ${b.on?'on':''}">${b.on?'🏅':'🔒'} ${b.n}</span>`).join('')}</div>`;}
+/* hooks */
+const _sv=showView;showView=function(id){_sv(id);if(id==='materi')done('materi');if(id==='templates')done('template');if(id==='game')renderGame();if(id==='home')renderMissions();};
+const _gb=generateBMC;generateBMC=function(){_gb();done('bmc');award('bmc',20);};
+let QW=[];
+const _aq=answerQuiz;answerQuiz=function(i){if(quizAnswered)return;const ok=i===quizQuestions[quizIndex].correct;_aq(i);if(ok)award('q'+quizIndex,5,QEL[quizIndex]);else if(QEL[quizIndex])QW.push(QEL[quizIndex]);};
+const _nq=nextQuestion;nextQuestion=function(){_nq();if(quizFinished){done('quiz');weak('.result-panel',QW);if(quizScore===quizQuestions.length)celebratePerfect();autoSendScores();}};
+const _rq=resetQuiz;resetQuiz=function(){QW=[];_rq();};
+function elName(k){return elements.find(e=>e.key===k).name;}
+function weak(sel,arr){const u=[...new Set(arr)];const t=document.querySelector(sel);if(t)t.insertAdjacentHTML('beforeend',u.length?`<p style="color:var(--muted)"><b>Elemen yang perlu diulang:</b> ${u.map(elName).join(', ')}.</p>`:'<p style="color:var(--green)"><b>Semua elemen sudah tepat. Kerja bagus!</b></p>');}
+/* Tebak Elemen */
+let gOrder=[],gi=0,gAns=false,gScore=0,GW=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function renderGame(reset){const c=document.getElementById('gameCard');if(!gOrder.length||reset){gOrder=shuffle(gameData.map((_,i)=>i));gi=0;gScore=0;GW=[];}
+ if(gi>=gOrder.length){autoSendScores();if(gScore===gOrder.length)celebratePerfect();c.innerHTML=`<div class="result-panel"><div class="result-icon">${gScore>=10?'🏆':gScore>=7?'🌟':'📚'}</div><div class="result-score">${gScore}<span style="font-size:20px;color:#8190a7">/${gOrder.length}</span></div><h2>${gScore>=10?'Hebat! Kamu jago membedakan elemen.':'Bagus, ayo ulangi untuk memperkuat.'}</h2><button class="btn primary" onclick="renderGame(true)">↻ Main lagi</button> <button class="btn white" onclick="showView('materi')">Pelajari materi</button></div>`;done('game');weak('.result-panel',GW);return;}
+ const d=gameData[gOrder[gi]];gAns=false;
+ c.innerHTML=`<span class="pill">SITUASI ${gi+1} DARI ${gOrder.length}</span><div class="quiz-progress"><span style="width:${gi/gOrder.length*100}%"></span></div><h3 class="quiz-question">${d[0]}</h3><p style="color:var(--muted);font-size:13px;margin:-8px 0 14px">Termasuk elemen BMC yang mana?</p><div class="answer-list">${elements.map(e=>`<button class="answer" id="g_${e.key}" onclick="guess('${e.key}')"><span class="letter">${e.icon}</span><span>${e.name}</span></button>`).join('')}</div><div class="explanation" id="gExp"></div><div class="wizard-nav"><span></span><button class="btn primary" id="gNext" disabled onclick="gi++;renderGame()">${gi===gOrder.length-1?'Lihat hasil':'Berikutnya →'}</button></div>`;}
+function guess(k){if(gAns)return;gAns=true;const id=gOrder[gi],d=gameData[id],ok=k===d[1];
+ elements.forEach(e=>document.getElementById('g_'+e.key).disabled=true);document.getElementById('g_'+d[1]).classList.add('correct');if(!ok){document.getElementById('g_'+k).classList.add('wrong');GW.push(d[1]);}else{gScore++;award('g'+id,10,d[1]);}
+ const x=document.getElementById('gExp');x.classList.add('show');x.innerHTML=`<b>${ok?'✓ Benar! +10 poin':'↻ Belum tepat. Jawaban: '+elName(d[1])}</b> ${d[2]}`;document.getElementById('gNext').disabled=false;document.getElementById('gNext').style.opacity='1';}
+
+/* ===== Simpan nilai otomatis dan perayaan nilai sempurna ===== */
+function participantId(){let id=localStorage.getItem('bmclearn-participant-id');if(!id){id=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'bmc-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);localStorage.setItem('bmclearn-participant-id',id);}return id;}
+function celebratePerfect(){const box=document.createElement('div');box.className='bmc-confetti';for(let i=0;i<90;i++){const bit=document.createElement('i');bit.style.left=Math.random()*100+'%';bit.style.background=['#2563eb','#14b88a','#f59e0b','#ef6d85','#7c5ce6'][i%5];bit.style.setProperty('--dx',(Math.random()*240-120)+'px');bit.style.animationDelay=(Math.random()*.55)+'s';box.appendChild(bit);}document.body.appendChild(box);setTimeout(()=>box.remove(),3200);toast('🎉 Sempurna! Nilai 100!');}
+function autoSendScores(){if(!T.consent||!T.nama||!T.kelas)return;if(!GOOGLE_SHEETS_ENDPOINT.endsWith('/exec'))return;const payload={participantId:participantId(),participantName:T.nama,classGroup:T.kelas,pretestScore:T.pre?T.pre.score:'',posttestScore:T.post?T.post.score:'',quizScore:quizFinished?Math.round(quizScore/quizQuestions.length*100):'',gameScore:gOrder.length&&gi>=gOrder.length?(gScore+'/'+gOrder.length):''};fetch(GOOGLE_SHEETS_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}).catch(()=>{});}
+/* ===== Pretest & Posttest ===== */
+const TQ={pre:[
+['Kedai bubble tea menyasar remaja usia 13–18 tahun. Hal ini termasuk elemen…',['Channels','Customer Segments','Value Propositions','Key Partnerships'],1,'segments'],
+['Minuman rendah gula dengan harga terjangkau menjadi alasan pelanggan memilih kedai. Ini termasuk…',['Value Propositions','Revenue Streams','Cost Structure','Key Activities'],0,'value'],
+['Penjualan lewat Instagram dan aplikasi pesan antar termasuk…',['Customer Relationships','Channels','Key Resources','Customer Segments'],1,'channels'],
+['Memberi kartu member dan membalas keluhan pelanggan dengan cepat termasuk…',['Customer Relationships','Channels','Cost Structure','Revenue Streams'],0,'relations'],
+['Uang yang diterima dari penjualan gelas dan paket hemat termasuk…',['Cost Structure','Revenue Streams','Key Partnerships','Value Propositions'],1,'revenue'],
+['Mesin blender, freezer, dan resep rahasia milik usaha termasuk…',['Key Activities','Key Resources','Channels','Key Partnerships'],1,'resources'],
+['Menyeduh teh, meracik minuman, dan memeriksa kebersihan setiap hari termasuk…',['Key Resources','Cost Structure','Key Activities','Customer Segments'],2,'activities'],
+['Pemasok gula dan jasa kurir yang bekerja sama dengan usaha termasuk…',['Key Partnerships','Key Resources','Channels','Revenue Streams'],0,'partners'],
+['Gaji pegawai, sewa kios, dan biaya bahan baku dicatat dalam…',['Revenue Streams','Key Activities','Cost Structure','Key Resources'],2,'cost'],
+['Pasangan mana yang BENAR untuk usaha jasa desain?',['Laptop = Key Activities; mendesain = Key Resources','Laptop = Key Resources; mendesain = Key Activities','Laptop dan mendesain = Key Resources','Laptop dan mendesain = Key Activities'],1,'resources']],
+post:[
+['Usaha mie lidi menyasar siswa SMP dan SMA yang suka camilan pedas. Hal ini termasuk…',['Customer Segments','Channels','Revenue Streams','Key Partnerships'],0,'segments'],
+['Camilan higienis, pedasnya bisa dipilih, dan harganya terjangkau menjadi alasan pelanggan membeli. Ini termasuk…',['Cost Structure','Key Resources','Value Propositions','Customer Relationships'],2,'value'],
+['Berjualan lewat kantin sekolah dan WhatsApp termasuk…',['Channels','Key Activities','Customer Segments','Cost Structure'],0,'channels'],
+['Mengirim ucapan terima kasih dan menerima saran rasa dari pelanggan tetap termasuk…',['Channels','Key Partnerships','Customer Relationships','Revenue Streams'],2,'relations'],
+['Pemasukan dari penjualan satuan dan paket 5 bungkus termasuk…',['Revenue Streams','Cost Structure','Key Resources','Channels'],0,'revenue'],
+['Mesin penggoreng, plastik kemasan, dan modal awal milik pemilik termasuk…',['Key Activities','Key Partnerships','Key Resources','Customer Segments'],2,'resources'],
+['Menggoreng mie, membumbui, dan mengemas pesanan setiap hari termasuk…',['Key Activities','Key Resources','Cost Structure','Value Propositions'],0,'activities'],
+['Toko grosir yang memasok tepung dan bumbu secara tetap termasuk…',['Channels','Key Partnerships','Key Activities','Revenue Streams'],1,'partners'],
+['Biaya tepung, minyak goreng, dan plastik kemasan dicatat dalam…',['Cost Structure','Revenue Streams','Key Resources','Customer Segments'],0,'cost'],
+['Pasangan mana yang BENAR untuk usaha jasa foto?',['Kamera = Key Activities; memotret = Key Resources','Kamera dan memotret = Key Resources','Kamera = Key Resources; memotret = Key Activities','Kamera dan memotret = Key Activities'],2,'resources']]};
+let T={nama:'',kelas:'',pre:null,post:null};
+try{T=Object.assign(T,JSON.parse(localStorage.getItem('bmclearn-tes')||'{}'));}catch(e){}
+function saveT(){try{localStorage.setItem('bmclearn-tes',JSON.stringify(T));}catch(e){}}
+let tm=null,ti=0,tans=[];
+function ng(){if(!T.pre||!T.post)return null;const a=T.pre.score,b=T.post.score;if(a>=100)return null;const g=(b-a)/(100-a);return {g:g,k:g>0.7?'Tinggi':g>=0.3?'Sedang':'Rendah'};}
+function renderTes(){const c=document.getElementById('tesCard');
+ const stage=window.bmcTestStage||'pretest';const isPost=stage==='posttest';
+ const heading=document.getElementById('tesHeading'),description=document.getElementById('tesDescription'),pill=document.getElementById('tesPill');
+ if(heading)heading.textContent=isPost?'Post-test 🏁':'Pre-test 📝';
+ if(description)description.textContent=isPost?'Kerjakan tes akhir setelah menyelesaikan materi, tebak elemen, penyusunan BMC, template, dan kuis. Hasilnya digunakan untuk melihat perkembangan pemahamanmu.':'Kerjakan tes awal sebelum memulai pembelajaran. Hasilnya menjadi gambaran pemahaman awalmu tentang Business Model Canvas.';
+ if(pill)pill.textContent=isPost?'TES AKHIR • 10 SOAL':'TES AWAL • 10 SOAL';
+ if(tm){const q=TQ[tm][ti];c.innerHTML=`<span class="pill">${tm==='pre'?'PRETEST':'POSTTEST'} • SOAL ${ti+1} DARI 10</span><div class="quiz-progress"><span style="width:${ti/10*100}%"></span></div><h3 class="quiz-question">${q[0]}</h3><div class="answer-list">${q[1].map((a,i)=>`<button class="answer ${tans[ti]===i?'sel':''}" onclick="tPick(${i})"><span class="letter">${String.fromCharCode(65+i)}</span><span>${a}</span></button>`).join('')}</div><div class="wizard-nav"><span></span><button class="btn primary" ${tans[ti]===undefined?'disabled style="opacity:.5"':''} onclick="tNext()">${ti===9?'Selesai':'Berikutnya →'}</button></div>`;return;}
+ if(!T.nama){c.innerHTML=`<h3 style="margin-top:0">Isi identitasmu dulu</h3><div class="field"><label for="tNama">Nama</label><input id="tNama" placeholder="Nama lengkap"></div><div class="field"><label for="tKelas">Kelas</label><input id="tKelas" placeholder="Contoh: X-3"></div><label style="display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--muted);margin:12px 0"><input id="tConsent" type="checkbox" style="margin-top:3px"><span>Saya setuju nama, kelas, dan nilai aktivitas (pre-test, post-test, kuis, serta Tebak Elemen) dikirim otomatis ke Google Spreadsheet untuk keperluan pembelajaran.</span></label><button class="btn primary" onclick="tSave()">Simpan dan lanjut</button>`;return;}
+ const n=ng();const st=(r)=>r?`Skor: <b>${r.score}</b>/100`:'Belum dikerjakan';
+ c.innerHTML=`<p style="margin-top:0"><b>${T.nama}</b> • Kelas ${T.kelas}</p><div class="tes-row"><div class="tes-box"><h4 style="margin:0 0 6px">${isPost?'Post-test':'Pre-test'}</h4><p style="margin:0 0 12px;color:var(--muted);font-size:13px">${st(isPost?T.post:T.pre)}. ${isPost?'Kerjakan setelah menyelesaikan seluruh rangkaian belajar. Post-test baru dapat dimulai setelah pre-test selesai.':'Kerjakan sebelum memulai materi dan aktivitas.'}</p><button class="btn primary" ${(isPost?(!T.pre||T.post):!!T.pre)?'disabled style="opacity:.5"':''} onclick="tStart('${isPost?'post':'pre'}')">${(isPost?T.post:T.pre)?'Sudah selesai':(isPost?'Mulai post-test':'Mulai pre-test')}</button></div></div>`
+ +(n?`<div class="notice">📈 <b>N-Gain: ${n.g.toFixed(2)} (${n.k})</b> • Pretest ${T.pre.score} → Posttest ${T.post.score}</div>`:'')
+ +(T.post?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn white" onclick="tCopy()">📋 Salin hasil</button><button class="btn white" onclick="tCsv()">⬇ Unduh CSV</button><button class="btn white" onclick="window.print()">🖨 Cetak / PDF</button></div>`:'')
+ +(T.pre?`<div id="tWeak"></div><p style="margin:16px 0 0;font-size:12px"><a href="#" onclick="tReset();return false" style="color:var(--muted)">Hapus data tes di perangkat ini</a></p>`:'');
+ const r=T.post||T.pre;if(r)weak('#tWeak',r.wrong);}
+function tSave(){const a=document.getElementById('tNama').value.trim(),b=document.getElementById('tKelas').value.trim(),consent=document.getElementById('tConsent').checked;if(!a||!b){toast('Isi nama dan kelas dulu.');return;}if(!consent){toast('Centang persetujuan pengiriman nilai terlebih dahulu.');return;}T.nama=a;T.kelas=b;T.consent=true;saveT();renderTes();autoSendScores();}
+function tStart(m){tm=m;ti=0;tans=[];renderTes();}
+function tPick(i){tans[ti]=i;renderTes();}
+function tNext(){if(tans[ti]===undefined)return;if(ti<9){ti++;renderTes();return;}
+ const wrong=[];let ok=0;TQ[tm].forEach((q,i)=>{if(tans[i]===q[2])ok++;else wrong.push(q[3]);});
+ const completedTest=tm;T[completedTest]={score:ok*10,wrong:wrong,date:new Date().toLocaleString('id-ID')};saveT();tm=null;done(completedTest==='pre'?'pre':'post');toast('Tes selesai. Skor: '+ok*10);if(ok===10)celebratePerfect();autoSendScores();renderTes();}
+function tText(){const n=ng();return `Nama: ${T.nama}\nKelas: ${T.kelas}\nPretest: ${T.pre.score}\nPosttest: ${T.post.score}\nN-Gain: ${n?n.g.toFixed(2)+' ('+n.k+')':'-'}`;}
+function tCopy(){try{navigator.clipboard.writeText(tText());toast('Hasil disalin.');}catch(e){toast('Gagal menyalin. Gunakan Unduh CSV.');}}
+function tCsv(){const n=ng();const row=[T.nama,T.kelas,T.pre.score,T.post.score,n?n.g.toFixed(2):'',n?n.k:'',T.post.date].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',');const b=new Blob(['Nama,Kelas,Pretest,Posttest,N-Gain,Kategori,Waktu\n'+row],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='hasil_bmc_'+T.nama.replace(/\s+/g,'_')+'.csv';a.click();}
+function tReset(){if(confirm('Hapus nama dan hasil tes di perangkat ini?')){T={nama:'',kelas:'',pre:null,post:null};saveT();renderTes();}}
+const _sv2=showView;showView=function(id){_sv2(id);if(id==='tes'||id==='pretest'||id==='posttest')renderTes();};
+/* ===== Pengiriman hasil belajar ke Google Sheets ===== */
+// Setelah membuat Google Apps Script Web App, tempel URL /exec milikmu di bawah.
+const GOOGLE_SHEETS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxmQCyR02dh2ij-0CASC5o3PbkEzvWfmqeg5-78Ql_ownDvsF2vwatibsThg1mzbhFr/exec';
+function collectSubmission(){return {participantId:participantId(),participantName:T.nama||document.getElementById('submitName')?.value.trim()||'',classGroup:T.kelas||document.getElementById('submitClass')?.value.trim()||'',pretestScore:T.pre?T.pre.score:'',posttestScore:T.post?T.post.score:'',quizScore:quizFinished?Math.round(quizScore/quizQuestions.length*100):'',gameScore:gOrder.length&&gi>=gOrder.length?(gScore+'/'+gOrder.length):''};}
+
+function renderSubmitSummary(){
+ const el=document.getElementById('submitSummary');if(!el)return;
+ const doneTests=T.pre&&T.post;
+ const bmcCount=elements.filter(e=>String(currentBMC[e.key]||'').trim()).length;
+ el.innerHTML=`<b>Ringkasan yang akan dikirim</b><br>Nama usaha: ${escapeHtml(currentBMC.name||'Belum membuat/memilih BMC')}<br>Elemen BMC terisi: ${bmcCount}/9<br>Pretest: ${T.pre?T.pre.score+'/100':'Belum dikerjakan'} • Posttest: ${T.post?T.post.score+'/100':'Belum dikerjakan'}<br>Kuis: ${quizFinished?Math.round(quizScore/quizQuestions.length*100)+'/100':'Belum selesai'} • Poin belajar: ${G.pts||0}`;
+}
+function downloadResultsJSON(){
+ const data=collectSubmission();
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='hasil-bmc-'+(data.participantName||'peserta').toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+async function submitResults(){
+ const status=document.getElementById('submitStatus');
+ const name=T.nama||document.getElementById('submitName').value.trim();
+ const consent=!!T.consent||document.getElementById('submitConsent').checked;
+ const bmcCount=elements.filter(e=>String(currentBMC[e.key]||'').trim()).length;
+ if(!name){status.textContent='Isi nama panggilan atau kode peserta terlebih dahulu.';return;}
+ if(!consent){status.textContent='Centang persetujuan sebelum mengirim hasil.';return;}
+ 
+ if(!GOOGLE_SHEETS_ENDPOINT.startsWith('https://script.google.com/macros/s/')||!GOOGLE_SHEETS_ENDPOINT.endsWith('/exec')){
+  status.textContent='Koneksi Google Sheets belum disetel. Ikuti petunjuk setup yang disertakan bersama file website, lalu tempel URL Web App di konfigurasi file.';return;
+ }
+ const payload=collectSubmission();
+ const btn=document.getElementById('submitBtn');btn.disabled=true;btn.style.opacity='.65';status.textContent='Mengirim permintaan…';
+ try{
+  // no-cors dipakai karena endpoint Apps Script lintas domain. Browser tidak mengizinkan membaca responsnya; cek spreadsheet untuk memastikan baris masuk.
+  await fetch(GOOGLE_SHEETS_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+  status.textContent='Permintaan pengiriman sudah dikirim oleh browser. Karena batasan koneksi lintas domain, status akhir tidak dapat dikonfirmasi di sini—buka Google Sheets dan pastikan baris baru muncul.';
+ }catch(err){status.textContent='Pengiriman gagal dimulai. Periksa koneksi internet dan URL Apps Script, lalu coba lagi.';}
+ finally{btn.disabled=false;btn.style.opacity='1';}
+}
+const _svSubmit=showView;showView=function(id){_svSubmit(id);if(id==='submit')renderSubmitSummary();};
+renderElements();renderTemplates();renderQuiz();renderMissions();updateChip();if(T.consent&&T.nama&&T.kelas)autoSendScores();
+</script>
+</body>
+</html>
